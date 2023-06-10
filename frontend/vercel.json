@@ -1,0 +1,20 @@
+{
+    "routes": [
+        {
+            "src": "/assets/(.*)",
+            "dest": "assets/$1"
+        },
+        {
+            "src": "/imgs/(.*)",
+            "dest": "imgs/$1"
+        },
+        {
+            "src": "/audio/(.*)",
+            "dest": "audio/$1"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "index.html"
+        }
+    ]
+}
