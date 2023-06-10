@@ -354,6 +354,7 @@ const Room = () => {
                 screenSharingCallsRef.current[socketId] = call;
 
                 call.on('close', () => {
+                    console.log('calling closing...');
                     call.close();
                     delete screenStreamRef.current[socketId];
                 })
@@ -522,6 +523,7 @@ const Room = () => {
                 toast.info(`${user.name} is turned on screen sharing!`);
 
                 call.on('close', () => {
+                    console.log('call closing...');
                     delete callsRef.current[socketId];
                     setVideos(p => {
                         const updatedVideos = { ...p };
@@ -555,6 +557,7 @@ const Room = () => {
                 callsRef.current[socketId] = call;
 
                 call.on('close', () => {
+                    console.log('call closing...');
                     callsRef.current[socketId];
                     setVideos(p => {
                         const updatedVideos = { ...p };
@@ -617,6 +620,7 @@ const Room = () => {
                         screenSharingCallsRef.current[fromSocketId] = call;
 
                         call.on('close', () => {
+                            console.log('call closing...');
                             call.close();
                             delete screenStreamRef.current[fromSocketId];
                         })

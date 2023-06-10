@@ -4,7 +4,7 @@ import { getLocalStream } from '../utils';
 import { toast } from 'react-toastify';
 import { Loader } from '../components';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import Peer from 'peerjs';
+import Peer from 'peerjs-client';
 import { useSelector } from 'react-redux';
 
 export const SocketContext = React.createContext({
