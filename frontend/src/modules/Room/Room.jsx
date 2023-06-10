@@ -85,7 +85,7 @@ const Video = ({ togglePinned, socketId, isVideoPlaying, screenShare, isAudioPla
                     <>
                         <audio autoPlay muted={muted} ref={ref} />
                         {/* <img src={img ? img : '/imgs/avatar.png'} alt={name ? name : 'AVATAR'} /> */}
-                        <Avatar className={styles.center} name={name ? name : 'AVATAR'} textSizeRatio={1.75} src={img} alt={name ? name : 'AVATAR'} round />
+                        <Avatar className={styles.center} name={name ? name : 'AVATAR'} textSizeRatio={1.75} src={img ? img : '/imgs/avatar.png'} alt={name ? name : 'AVATAR'} round />
                     </>
                 )
             }
