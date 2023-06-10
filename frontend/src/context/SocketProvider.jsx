@@ -15,7 +15,7 @@ export const SocketContext = React.createContext({
     screenStreamRef: null,
 });
 
-const regexExp = /^[0-9a-f]{8}\b-[0-9a-f]{4}\b-[0-9a-f]{4}\b-[0-9a-f]{4}\b-[0-9a-f]{12}$/;
+const regexExp = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 
 const SocketProvider = ({ children }) => {
     const socketRef = useRef(null);

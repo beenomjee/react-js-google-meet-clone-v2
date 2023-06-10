@@ -1,10 +1,12 @@
 import { useDispatch, useSelector } from 'react-redux'
 import styles from './SingUp.module.scss'
-import { signUpUser } from '../../store'
+import { setUser, signUpUser } from '../../store'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'react-toastify'
 import { Input, Loader } from '../../components'
 import { Link, useNavigate } from 'react-router-dom'
+import { FcGoogle } from 'react-icons/fc'
+import { loginWithGoogle } from '../../firebase'
 
 
 
@@ -39,6 +41,17 @@ const SignUp = () => {
             setData(p => ({ ...p, [id]: e.target.value }))
     }
 
+    const onGoogle = () => {
+        dispatch(setUser({ isLoading: true }))
+        loginWithGoogle(data => {
+            dispatch(setUser({ ...data, isLoading: false }));
+            toast.success('Signed Up!');
+        }, () => {
+            toast.error('Something went wrong. Please try again!')
+            dispatch(setUser({ isLoading: false }));
+        });
+    }
+
     useEffect(() => {
         if (userEmail)
             navigate('/', { replace: true });
@@ -67,6 +80,8 @@ const SignUp = () => {
                     <Input id="file" onChange={onChange} label="Image" type="file" accept="image/*" className={styles.img} ><img src={data.file ? data.file : "/imgs/avatar.png"} alt='AVATAR' /></Input>
                     <button type='submit'>Sign Up</button>
                     <p>Already have account? <Link to='/signin'>Sign In</Link></p>
+                    <p><span>OR</span></p>
+                    <button onClick={onGoogle} type='button'><span><FcGoogle /></span><span>Continue with google</span></button>
                 </form>
             </div>
         )

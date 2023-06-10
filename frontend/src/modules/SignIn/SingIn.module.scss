@@ -38,6 +38,18 @@
       &:hover {
         filter: saturate(2);
       }
+
+      &:last-of-type {
+        background-color: rgba($color: $light, $alpha: 0.1);
+        @include flex(row, center, center, 0.5rem);
+        &:hover {
+          background-color: rgba($color: $light, $alpha: 0.12);
+        }
+
+        & > span {
+          @include center();
+        }
+      }
     }
 
     & > p {
@@ -50,6 +62,29 @@
 
         &:hover {
           text-decoration: underline;
+        }
+      }
+
+      &:last-of-type {
+        position: relative;
+        z-index: 1;
+        &::before {
+          @include position(absolute, 50%, 50%);
+          z-index: -1;
+          transform: translate(-50%, -50%);
+          content: "";
+          height: 1px;
+          width: 80%;
+          background-color: rgba($color: $light-gray, $alpha: 0.1);
+          display: block;
+        }
+
+        & > span {
+          display: block;
+          height: 100%;
+          width: 50px;
+          background-color: $primary;
+          margin: 0 auto;
         }
       }
     }

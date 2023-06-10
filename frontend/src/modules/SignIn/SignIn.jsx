@@ -1,9 +1,12 @@
 import { useDispatch, useSelector } from 'react-redux'
 import styles from './SingIn.module.scss'
-import { signInUser } from '../../store'
+import { setUser, signInUser } from '../../store'
 import { useEffect, useRef, useState } from 'react'
 import { Input, Loader } from '../../components'
 import { Link, useNavigate } from 'react-router-dom'
+import { FcGoogle } from 'react-icons/fc'
+import { loginWithGoogle } from '../../firebase'
+import { toast } from 'react-toastify'
 
 
 
@@ -25,6 +28,17 @@ const SignIn = () => {
     const onChange = e => {
         const id = e.target.id;
         setData(p => ({ ...p, [id]: e.target.value }))
+    }
+
+    const onGoogle = () => {
+        dispatch(setUser({ isLoading: true }))
+        loginWithGoogle(data => {
+            dispatch(setUser({ ...data, isLoading: false }));
+            toast.success('Signed In!');
+        }, () => {
+            toast.error('Something went wrong. Please try again!')
+            dispatch(setUser({ isLoading: false }));
+        });
     }
 
     useEffect(() => {
@@ -52,6 +66,8 @@ const SignIn = () => {
                     <Input id="password" value={data.password} onChange={onChange} label="Password" type="password" required placeholder="Password for authentication" autoComplete='on' />
                     <button type='submit'>Sign In</button>
                     <p>Don&#39;t have account? <Link to='/signup'>Sign Up</Link></p>
+                    <p><span>OR</span></p>
+                    <button onClick={onGoogle} type='button'><span><FcGoogle /></span><span>Continue with google</span></button>
                 </form>
             </div>
         )
