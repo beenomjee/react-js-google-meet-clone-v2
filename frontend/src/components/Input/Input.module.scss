@@ -1,0 +1,36 @@
+@import "../../styles";
+
+.input {
+  @include flex(column, stretch, flex-start, 2px);
+  & > span {
+    @include font(1.1rem, 500);
+    color: rgba($color: $light-gray, $alpha: 0.7);
+    text-transform: uppercase;
+  }
+
+  & > div {
+    @include flex(row, center, space-between);
+
+    & > input {
+      flex: 1;
+      padding: 0.8rem 1.6rem;
+      border-radius: 2px;
+      outline: none;
+      border: none;
+      @include font(1.2rem);
+      background-color: $secondary;
+      color: rgba($color: $light-gray, $alpha: 0.5);
+
+      &:focus {
+        outline: 2px solid rgba($color: $link, $alpha: 0.5);
+      }
+
+      &[type="file"]::-webkit-file-upload-button {
+        display: none;
+      }
+    }
+  }
+  &:hover > div > input {
+    outline: 2px solid rgba($color: $link, $alpha: 0.5);
+  }
+}
