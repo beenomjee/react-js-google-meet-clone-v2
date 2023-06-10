@@ -8,8 +8,9 @@ import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { formatAMPM } from '../../utils';
+import Avatar from 'react-avatar';
 
-const BottomBarComp = ({ toggleIsPeopleOpen, toggleIsMessaging, bottomBarData }) => {
+const BottomBarComp = ({ isNewMessageRecieved, setIsNewMessageRecieved, isMessaging, toggleIsPeopleOpen, toggleIsMessaging, bottomBarData }) => {
     const { socketRef, screenStreamRef } = useSocket();
     const navigate = useNavigate();
     const toggleVideoPlaying = () => {
@@ -38,6 +39,12 @@ const BottomBarComp = ({ toggleIsPeopleOpen, toggleIsMessaging, bottomBarData })
         navigate('/', { replace: true })
     }
 
+    useEffect(() => {
+        if (isMessaging && isNewMessageRecieved)
+            setIsNewMessageRecieved(false);
+    }, [isMessaging, setIsNewMessageRecieved, isNewMessageRecieved]);
+
+
     return (
         <div className={styles.bottomBarComp}>
             <div className={styles.left}></div>
@@ -49,7 +56,10 @@ const BottomBarComp = ({ toggleIsPeopleOpen, toggleIsMessaging, bottomBarData })
             </div>
             <div className={styles.right}>
                 <button onClick={toggleIsPeopleOpen}><FaUser /></button>
-                <button onClick={toggleIsMessaging}><MdChat /></button>
+                <button onClick={toggleIsMessaging}>
+                    <MdChat />
+                    <span className={`${styles.dot} ${isNewMessageRecieved ? styles.show : ''}`}></span>
+                </button>
             </div>
         </div>
     )
@@ -74,7 +84,8 @@ const Video = ({ togglePinned, socketId, isVideoPlaying, screenShare, isAudioPla
                 ) : (
                     <>
                         <audio autoPlay muted={muted} ref={ref} />
-                        <img src={img ? img : '/imgs/avatar.png'} alt={name ? name : 'AVATAR'} />
+                        {/* <img src={img ? img : '/imgs/avatar.png'} alt={name ? name : 'AVATAR'} /> */}
+                        <Avatar className={styles.center} name={name ? name : 'AVATAR'} textSizeRatio={1.75} src={img} alt={name ? name : 'AVATAR'} round />
                     </>
                 )
             }
@@ -82,7 +93,6 @@ const Video = ({ togglePinned, socketId, isVideoPlaying, screenShare, isAudioPla
                 <button onClick={() => togglePinned(socketId, !pinned)} className={pinned ? styles.pin : ''}><MdPushPin /></button>
                 {!screenShare && <span>{isAudioPlaying ? <BsFillMicFill /> : <BsFillMicMuteFill />}</span>}
             </p>
-            <span>{name ?? "No Name User"}</span>
         </div>
     )
 }
@@ -162,13 +172,15 @@ const MessageComp = ({ isMe, name, time, message }) => {
     )
 }
 
-const MessageBoxComp = ({ isMessaging, onClose, toggleIsMessaging }) => {
+const MessageBoxComp = ({ setIsNewMessageRecieved, isMessaging, onClose, toggleIsMessaging }) => {
     const ref = useRef(null);
     const InputRef = useRef(null);
     const [messages, setMessages] = useState([]);
     const [inputValue, setInputValue] = useState('');
     const { socketRef } = useSocket();
     const user = useSelector(store => store.user)
+    const audioElRef = useRef(null);
+
 
     useClickOutsideExtra(ref, isMessaging, () => {
         onClose();
@@ -187,6 +199,11 @@ const MessageBoxComp = ({ isMessaging, onClose, toggleIsMessaging }) => {
                 isMe: socketRef.current.id === socketId,
                 time: formatAMPM(new Date(Date.now()))
             }])
+
+            if (socketRef.current.id !== socketId) {
+                audioElRef.current.play();
+                setIsNewMessageRecieved(true);
+            }
         }
 
         console.log('Adding events to ws for new message...');
@@ -196,7 +213,7 @@ const MessageBoxComp = ({ isMessaging, onClose, toggleIsMessaging }) => {
             console.log('Adding events to ws for new message...');
             socket.on('message', onNewMessage);
         }
-    }, [socketRef])
+    }, [setIsNewMessageRecieved, setMessages, socketRef])
 
     const onSubmit = e => {
         e.preventDefault();
@@ -223,6 +240,7 @@ const MessageBoxComp = ({ isMessaging, onClose, toggleIsMessaging }) => {
             <form className={styles.bottom} onSubmit={onSubmit}>
                 <input ref={InputRef} type="text" placeholder='Enter message?' value={inputValue} onChange={e => setInputValue(e.target.value)} />
                 <button type='submit'><MdSend /></button>
+                <audio ref={audioElRef} src={"/audio/tone.mp3"}></audio>
             </form>
         </div>
     )
@@ -232,7 +250,7 @@ const PeopleComp = ({ onClick, pinned, img, email, name }) => {
     return (
         <div className={styles.peopleComp}>
             <div className={styles.left}>
-                <img src={img ? img : "/imgs/avatar.png"} alt={name ? name : "AVATAR"} />
+                <Avatar size='40px' name={name ? name : 'AVATAR'} textSizeRatio={1.75} src={img} alt={name ? name : 'AVATAR'} round />
                 <div className={styles.right}>
                     <p>{name ?? "No Name User"}</p>
                     <span>{email ?? 'No Email User'}</span>
@@ -325,6 +343,7 @@ const Room = () => {
     const user = useSelector(store => store.user);
     const callsRef = useRef({});
     const screenSharingCallsRef = useRef({});
+    const [isNewMessageRecieved, setIsNewMessageRecieved] = useState(false);
 
     useEffect(() => {
         const onUserJoined = ({ socketId, userInfo }) => {
@@ -643,10 +662,10 @@ const Room = () => {
                 <VideoContainerComp videos={videos} togglePinned={togglePinned} />
             </div>
             <div className={styles.bottombar}>
-                <BottomBarComp toggleIsPeopleOpen={toggleIsPeopleOpen} toggleIsMessaging={toggleIsMessaging} bottomBarData={bottomBarData} setBottomBarData={setBottomBarData} />
+                <BottomBarComp isNewMessageRecieved={isNewMessageRecieved} setIsNewMessageRecieved={setIsNewMessageRecieved} isMessaging={isMessaging} toggleIsPeopleOpen={toggleIsPeopleOpen} toggleIsMessaging={toggleIsMessaging} bottomBarData={bottomBarData} />
             </div>
 
-            <MessageBoxComp isMessaging={isMessaging} onClose={onMessagingClose} toggleIsMessaging={toggleIsMessaging} />
+            <MessageBoxComp setIsNewMessageRecieved={setIsNewMessageRecieved} isMessaging={isMessaging} onClose={onMessagingClose} toggleIsMessaging={toggleIsMessaging} />
             <PeopleBoxComp togglePinned={togglePinned} videos={videos} isPeopleOpen={isPeopleOpen} onClose={onPeopleClose} toggleIsPeopleOpen={toggleIsPeopleOpen} />
         </div>
     )

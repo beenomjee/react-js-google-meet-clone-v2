@@ -68,6 +68,20 @@
       cursor: pointer;
       @include hoverEffect();
       @include center();
+
+      & > span {
+        display: none;
+        width: 0.7rem;
+        aspect-ratio: 1/1;
+        border-radius: 50%;
+        @include position(absolute, 0, unset, 0);
+        background-color: rgba($color: $danger, $alpha: 0.7);
+        transform: translate(50%, -50%);
+
+        &.show {
+          display: block;
+        }
+      }
     }
   }
 }
@@ -156,13 +170,23 @@
     }
   }
 
-  & > img {
+  & > .center {
     @include position(absolute, 50%, 50%);
     transform: translate(-50%, -50%);
-    height: 300px;
+    height: 300px !important;
     max-height: 50%;
     min-height: 70px;
-    border-radius: 50%;
+    aspect-ratio: 1/1 !important;
+    width: unset !important;
+
+    & > img {
+      width: 100% !important;
+      height: 100% !important;
+    }
+    & > div {
+      width: 100% !important;
+      height: 100% !important;
+    }
   }
 
   & > p {
@@ -190,21 +214,6 @@
       @include font(2rem);
       color: rgba($color: $light-gray, $alpha: 0.8);
       @include center();
-    }
-  }
-
-  & > span {
-    @include position(absolute, 0, 0, 0, 0);
-    @include center();
-    background-color: rgba($color: $black, $alpha: 0.5);
-    backdrop-filter: blur(4px);
-    @include font();
-    display: none;
-  }
-
-  &:hover {
-    & > span {
-      display: flex;
     }
   }
 }
@@ -428,9 +437,6 @@
     grid-template-columns: auto 1fr;
     grid-gap: 5px;
     align-items: center;
-    & > img {
-      @include avatar(40px);
-    }
     & > .right {
       overflow: hidden;
       & > * {
